@@ -12,6 +12,7 @@ class smartzone(hass.Hass):
       # climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
       # zoneswitch: The switch domain device that controls the zone
       # localtempsensor: The sensor that reports a temperature as state
+      # manualoverride (optional): Optional input boolean that provides allows for manual control. If the input boolean is on, then no action will be taken.
       # upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
       # lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
       
