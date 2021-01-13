@@ -44,6 +44,13 @@ class smartzone(hass.Hass):
       self.randomdelay = random.randrange(0,3)
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
+      try:
+         self.listen_state(self.conditionchange, self.conditionentity)
+      except:
+         pass
+
+   def conditionchange(self, entity, attribute, old, new, kwargs):
+      self.doaction()
 
    def inroomtempchange(self, entity, attribute, old, new, kwargs):
       try:
