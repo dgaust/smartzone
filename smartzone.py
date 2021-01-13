@@ -32,8 +32,8 @@ class smartzone(hass.Hass):
          self.conditionentity = self.conditions["entity"]
          self.conditionstate = self.conditions["targetstate"]
          self.log("entity " + self.conditionentity + " should be " + self.conditionstate + " before zone will open.")
-      except Exception as ex:
-         self.log(ex)
+      except:
+         pass
          
       self.randomdelay = random.randrange(0,3)
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
@@ -72,17 +72,15 @@ class smartzone(hass.Hass):
          else:
             isconditionmet = False
          self.log("Has conditions and the condition is met: " + str(isconditionmet))
-      except Exception as ex:
-         self.log("Has no conditions")
+      except:
+         pass
          
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
       currenttemp = float(self.get_state(self.localtempsensor))
       # Target temp is grabbed from a climate device.
       targettemp = float(self.get_state(self.targetempsensor, attribute="temperature"))
       climatetemp = float(self.get_state(self.targetempsensor, attribute="current_temperature"))
-      currentswitchstate = self.get_state(self.aczoneswitch)
-      self.log("Currently zone is " + currentswitchstate)
-      
+      currentswitchstate = self.get_state(self.aczoneswitch)    
       getmode = self.get_state(self.targetempsensor)
       if getmode == 'off' or getmode == 'heat_cool':
          # Attempt to guess the mode of the aircon, especially if heat_cool mode. If off, this just allows for zones to be open in preparation
