@@ -50,6 +50,7 @@ class smartzone(hass.Hass):
          pass
 
    def conditionchange(self, entity, attribute, old, new, kwargs):
+      self.log("The conditional entity state has changed, updating zone accordingly.")
       self.doaction()
 
    def inroomtempchange(self, entity, attribute, old, new, kwargs):
