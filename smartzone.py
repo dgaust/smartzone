@@ -1,6 +1,5 @@
 import appdaemon.plugins.hass.hassapi as hass
 import time
-import datetime
 import random
 
 class smartzone(hass.Hass):
