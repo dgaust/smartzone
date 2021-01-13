@@ -68,6 +68,8 @@ class smartzone(hass.Hass):
       
       getmode = self.get_state(self.targetempsensor)
       if getmode == 'off' or getmode == 'heat_cool':
+         # Attempt to guess the mode of the aircon, especially if heat_cool mode. If off, this just allows for zones to be open in preparation
+         # of the aircon being switch on. Mode will change depending on the set point.
          if (climatetemp > targettemp):
             mode = "cool"
          else:
