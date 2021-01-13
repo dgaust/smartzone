@@ -119,14 +119,14 @@ class smartzone(hass.Hass):
       else:
          self.switchoff()
       
-      def switchon(self):
-         self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
-         time.sleep(self.randomdelay)
-         if self.get_state(self.aczoneswitch) == "off":
-            self.switchon()
+   def switchon(self):
+      self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
+      time.sleep(self.randomdelay)
+      if self.get_state(self.aczoneswitch) == "off":
+         self.switchon()
       
-      def switchoff(self):
-         self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
-         time.sleep(self.randomdelay)
-         if self.get_state(self.aczoneswitch) == "on":
-            self.switchoff()
+   def switchoff(self):
+      self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
+      time.sleep(self.randomdelay)
+      if self.get_state(self.aczoneswitch) == "on":
+         self.switchoff()
