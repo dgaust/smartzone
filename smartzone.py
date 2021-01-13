@@ -93,35 +93,31 @@ class smartzone(hass.Hass):
          if mode == "cool":
             if (currenttemp < lowerrange) and currentswitchstate == "on":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're below target, so switching zone off.")
-               self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
-               time.sleep(self.randomdelay)
-               if self.get_state(self.aczoneswitch) == "on":
-                  self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
+               self.switchoff()
             elif (currenttemp > upperrange) and currentswitchstate == "off":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're above target, switching zone on")
-               self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
-               time.sleep(self.randomdelay)
-               if self.get_state(self.aczoneswitch) == "off":
-                  self.call_service("switch/turn_on", entity_id = self.aczoneswitch) 
+               self.switchon()
          elif mode == "heat":
             if (currenttemp >= upperrange):
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting a bit warm so switch zone on")
-               self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
-               time.sleep(self.randomdelay)
-               if self.get_state(self.aczoneswitch) == "on":
-                  self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
+               self.switchoff()
             elif (currenttemp < lowerrange):
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're warm enough so switching zone off")
-               self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
-               time.sleep(self.randomdelay)
-               if self.get_state(self.aczoneswitch) == "off":
-                  self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
+               self.switchon()
          elif mode == "fan_only" or mode == "dry":
             self.log("Fan or dry mode, so open the zone")
-            self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
-            time.sleep(self.randomdelay)
-            if self.get_state(self.aczoneswitch) == "off":
-               self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
+            self.switchon()
       else:
-         self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
+         self.switchoff()
       
+      def switchon(self):
+         self.call_service("switch/turn_on", entity_id = self.aczoneswitch)
+         time.sleep(self.randomdelay)
+         if self.get_state(self.aczoneswitch) == "off":
+            self.switchon()
+      
+      def switchoff(self):
+         self.call_service("switch/turn_off", entity_id = self.aczoneswitch)
+         time.sleep(self.randomdelay)
+         if self.get_state(self.aczoneswitch) == "on":
+            self.switchoff()
