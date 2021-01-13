@@ -12,9 +12,15 @@ class smartzone(hass.Hass):
       # climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
       # zoneswitch: The switch domain device that controls the zone
       # localtempsensor: The sensor that reports a temperature as state
-      # manualoverride (optional): Optional input boolean that provides allows for manual control. If the input boolean is on, then no action will be taken.
+      
       # upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
       # lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
+      
+      # Optional
+      # manualoverride: Optional input boolean that provides allows for manual control. If the input boolean is on, then no action will be taken.   
+      # conditions:
+      #   entity: the entity to watch for state changes to evaluate whether the condition is true.
+      #   targetstate: the state the entity must be in for automatic control to be triggered
       
       try: 
          self.entities = self.args["entities"]
@@ -70,6 +76,7 @@ class smartzone(hass.Hass):
          if state == self.conditionstate:
             isconditionmet = True
          else:
+            # we still want to run, and just turn the zone off when the condition is not met.
             isconditionmet = False
          self.log("Has conditions and the condition is met: " + str(isconditionmet))
       except:
