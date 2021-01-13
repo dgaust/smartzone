@@ -1,0 +1,45 @@
+loungesmartzone:
+  module: smartzone
+  class: smartzone
+  entities: 
+    climatedevice: climate.daikin_ac
+    zoneswitch: switch.daikin_ac_living
+    localtempsensor: sensor.great_room_sonoff_temperature
+    upperbound: 1.0
+    lowerbound: 0.5
+
+mediasmartzone:
+  module: smartzone
+  class: smartzone
+  entities: 
+    climatedevice: climate.daikin_ac
+    zoneswitch: switch.daikin_ac_media
+    localtempsensor: sensor.media_room_temp
+    upperbound: 1.0
+    lowerbound: 0.5
+  conditions:
+    entity: remote.media_room
+    targetstate: 'on'
+
+masterbedsmartzone:
+  module: smartzone
+  class: smartzone
+  entities: 
+    climatedevice: climate.daikin_ac
+    zoneswitch: switch.daikin_ac_master
+    localtempsensor: sensor.master_bedroom_sensor
+    upperbound: 1.0
+    lowerbound: 0.5
+
+bridgetsmartzone:
+  module: smartzone
+  class: smartzone
+  entities: 
+    climatedevice: climate.daikin_ac
+    zoneswitch: switch.daikin_ac_bridget
+    localtempsensor: sensor.bridgettemp
+    upperbound: 1.0
+    lowerbound: 1.0
+  conditions:
+    entity: binary_sensor.bridget_s_window_sensor
+    targetstate: 'off'
