@@ -24,8 +24,8 @@ class smartzone(hass.Hass):
          self.lowerbounds = float(self.entities["lowerbound"])
       except Exception as ex:
          self.log(ex)
-      
-      # self.conditions = []
+      self.autocontrol = True
+
       try:
          self.conditions = self.args["conditions"]
          self.conditionentity = self.conditions["entity"]
@@ -53,6 +53,16 @@ class smartzone(hass.Hass):
       self.doaction()
 
    def doaction(self):
+      
+      try:
+         zoneoverride = self.entities["manualoverride"]
+         if self.get_state(zoneoverride) == "on":
+            self.autocontrol = False
+            self.log("Automatic updates are disabled")
+            return
+      except:
+         self.log("No override provided")
+
       isconditionmet = True
       try:
          self.log(self.conditionentity)
