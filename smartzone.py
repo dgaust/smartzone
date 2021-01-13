@@ -6,6 +6,15 @@ class smartzone(hass.Hass):
    """SMART ZONE CONTROL"""
     
    def initialize(self):
+      
+      # Initialise the minimum entities required to control the zone.
+      # Required:
+      # climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
+      # zoneswitch: The switch domain device that controls the zone
+      # localtempsensor: The sensor that reports a temperature as state
+      # upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
+      # lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
+      
       try: 
          self.entities = self.args["entities"]
          self.targetempsensor = self.entities["climatedevice"]
