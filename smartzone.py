@@ -66,8 +66,6 @@ class smartzone(hass.Hass):
 
       isconditionmet = True
       try:
-         self.log(self.conditionentity)
-         self.log(self.conditionstate)
          state = self.get_state(self.conditionentity)
          if state == self.conditionstate:
             isconditionmet = True
@@ -75,7 +73,6 @@ class smartzone(hass.Hass):
             isconditionmet = False
          self.log("Has conditions and the condition is met: " + str(isconditionmet))
       except Exception as ex:
-         self.log(ex)
          self.log("Has no conditions")
          
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
@@ -96,7 +93,6 @@ class smartzone(hass.Hass):
             mode = "heat"
       else:
          mode = getmode
-      self.log("Mode is: " + mode)
       # lowerrange is the temperature set by the climate device, minus the lower bound
       # For example, if lower bound is 0.5 and the target temp of the climate device is 23, the lower bound will be 22.5.
       lowerrange = targettemp - self.lowerbounds
