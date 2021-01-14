@@ -28,17 +28,17 @@ guestroomsmartzone:
 
 Here is what every option means:
 
-| Name           |   Type    | Default      | Description                                                             |
-| -------------- | :-------: | ------------ | ----------------------------------------------------------------------- |
-| `climatedevice`| `string`  | **Required** | An entity_id within the `climate` domain.                               |
-| `zoneswitch`   | `string`  | **Required** | An entity_id within the `switch` domain.                                |
-| `localtempsensor`          | `string`  | Optional     | An entity_id within the `camera` domain, for streaming live vacuum map. |
-| `manualoverride`  | `integer` | `5`          | Update interval for map camera in seconds                               |
-| `coolingoffset`        | `string`  | `default`    | Path to image of your vacuum cleaner. Better to have `png` or `svg`.    |
+| Name               |   Type    | Default      | Description                                                             |
+| ------------------ | :-------: | ------------ | ----------------------------------------------------------------------- |
+| `climatedevice`    | `string`  | **Required** | An entity_id within the `climate` domain.                               |
+| `zoneswitch`       | `string`  | **Required** | An entity_id within the `switch` domain.                                |
+| `localtempsensor`  | `string`  | Optional     | An entity_id within the `camera` domain, for streaming live vacuum map. |
+| `manualoverride`   | `string`  | Optional     | Entity_id of an input_boolean                                           |
+| `coolingoffset`    | `string`  | `default`    | Path to image of your vacuum cleaner. Better to have `png` or `svg`.    |
 | `heatingoffset`    | `boolean` | `true`       | Show friendly name of the vacuum.                                       |
-| `conditions` | `boolean` | `false`      | Compact view without image.                                             |
-| `stats`        | `object`  | Optional     | Custom per state stats for your vacuum cleaner                          |
-| `actions`      | `object`  | Optional     | Custom actions for your vacuum cleaner.                                 |
+| `conditions`       | `boolean` | `false`      | Compact view without image.                                             |
+| `stats`            | `object`  | Optional     | Custom per state stats for your vacuum cleaner                          |
+| `actions`          | `object`  | Optional     | Custom actions for your vacuum cleaner.                                 |
 
 
 | Name           |   Type    | Default      | Description                                                             |
