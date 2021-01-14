@@ -5,8 +5,12 @@ loungesmartzone:
     climatedevice: climate.daikin_ac
     zoneswitch: switch.daikin_ac_living
     localtempsensor: sensor.great_room_sonoff_temperature
+  coolingoffset:
     upperbound: 1.0
-    lowerbound: 0.5
+    lowerbound: 1.0
+  heatingoffset:
+    upperbound: 1.0
+    lowerbound: 1.0
 
 mediasmartzone:
   module: smartzone
@@ -16,8 +20,12 @@ mediasmartzone:
     zoneswitch: switch.daikin_ac_media
     localtempsensor: sensor.media_room_temp
     manualoverride: input_boolean.mediazoneoverride
+  coolingoffset:
     upperbound: 1.0
-    lowerbound: 0.5
+    lowerbound: 1.0
+  heatingoffset:
+    upperbound: 1.0
+    lowerbound: 1.0
   conditions:
     - entity: remote.media_room
       targetstate: "on"
@@ -30,8 +38,12 @@ masterbedsmartzone:
     zoneswitch: switch.daikin_ac_master
     localtempsensor: sensor.master_bedroom_sensor
     manualoverride: input_boolean.masterzoneoverride
+  coolingoffset:
     upperbound: 1.0
-    lowerbound: 0.5
+    lowerbound: 1.0
+  heatingoffset:
+    upperbound: 1.0
+    lowerbound: 1.0
 
 bridgetsmartzone:
   module: smartzone
@@ -41,6 +53,10 @@ bridgetsmartzone:
     zoneswitch: switch.daikin_ac_bridget
     localtempsensor: sensor.bridgettemp
     manualoverride: input_boolean.bridgetzoneoverride
+  coolingoffset:
+    upperbound: 1.0
+    lowerbound: 1.0
+  heatingoffset:
     upperbound: 1.0
     lowerbound: 1.0
   conditions:
@@ -55,6 +71,10 @@ guestroomsmartzone:
     zoneswitch: switch.daikin_ac_guest
     localtempsensor: sensor.temperature_18
     manualoverride: input_boolean.guestairconzone
+  coolingoffset:
+    upperbound: 1.5
+    lowerbound: 0.5
+  heatingoffset:
     upperbound: 0.5
     lowerbound: 0.5
   conditions:
@@ -62,6 +82,7 @@ guestroomsmartzone:
       targetstate: "off"
     - entity: input_boolean.guest_mode
       targetstate: "on"
+
 
 alexsmartzone:
   module: smartzone
@@ -71,7 +92,11 @@ alexsmartzone:
     zoneswitch: switch.daikin_ac_alex
     localtempsensor: sensor.alexs_temperature
     manualoverride: input_boolean.alexsmartzone
+  coolingoffset:
     upperbound: 1.5
+    lowerbound: 0.5
+  heatingoffset:
+    upperbound: 0.5
     lowerbound: 0.5
   conditions:
     - entity: binary_sensor.alex_s_window_sensor
