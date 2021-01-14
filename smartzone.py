@@ -6,57 +6,7 @@ class smartzone(hass.Hass):
    """SMART ZONE CONTROL"""
     
    def initialize(self):
-      
-      # Initialise the minimum entities required to control the zone.
-      # 
-      # Required:
-      #
-      #  climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
-      #  zoneswitch: The switch domain device that controls the zone
-      #  localtempsensor: The sensor that reports a temperature as state 
-      #  upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
-      #  lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
-      
-      #  coolingoffset:
-      #     upperbound:
-      #     lowerbound:
-      #  heatingoffset:
-      #     upperbound:
-      #     lowerbound:   
-
-      # Optional
-      #
-      # manualoverride: Optional input boolean that provides allows for manual control. If the input boolean is on, then no action will be taken.   
-             
-      # conditions:
-      #   - entity: the entity to watch for state changes to evaluate whether the condition is true.
-      #     targetstate: the state the entity must be in for automatic control to be triggered
-      #
-      # You can add multiple conditions that need to be met for automatic action to be undertaken. ALL conditions must be met for 
-      # the automatic action to be taken.
-
-      #  Example configuration
-      #
-      #  guestroomsmartzone:
-      #     module: smartzone
-      #     class: smartzone
-      #     entities:
-      #        climatedevice: climate.daikin_ac
-      #        zoneswitch: switch.daikin_ac_guest
-      #        localtempsensor: sensor.temperature_18
-      #        manualoverride: input_boolean.guestairconzone
-      #     coolingoffset:
-      #        upperbound: 1.5
-      #        lowerbound: 0.5
-      #     heatingoffset:
-      #        upperbound: 0.5
-      #        lowerbound: 0.5
-      #     conditions:
-      #        - entity: binary_sensor.spare_bedroom_window
-      #          targetstate: "off"
-      #        - entity: input_boolean.guest_mode
-      #          targetstate: "on"
-      
+           
       try: 
          self.entities = self.args["entities"]
          self.targetempsensor = self.entities["climatedevice"]
