@@ -4,6 +4,8 @@ An appdaemon app to automatically control climate zones (on/off) only depending 
 
 Here is what every option means:
 
+# Minimum Configuration
+
 | Name               |   Type       | Default      | Description                                                             |
 | ------------------ | :----------: | ------------ | ----------------------------------------------------------------------- |
 | `climatedevice`    | `string`     | **Required** | An entity_id within the `climate` domain.                               |
@@ -14,13 +16,13 @@ Here is what every option means:
 | `heatingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
 | `conditions`       | `object`     | Optional     | Conditions object                                                       |
 
-** TEMPERATURE OFFSET OBJECT **                                                                                        
+# TEMPERATURE OFFSET OBJECT                                                                                      
 | Name           |   Type    | Default          | Description                                                             |
 | -------------- | :-------: | ---------------- | ----------------------------------------------------------------------- |
 | `upperbound`   | `float`   | **Required**     | Value above setpoint that localtempsensor can reach. Required if coolingoffset or heatingoffset is specified.                |
 | `lowerbound`   | `float`   | **Required**     | Value below setpoint that localtempsensor can reach. Required if coolingoffset or heatingoffset is specified.                |                 
  
-** CONDITION OBJECT **                                                                                                  
+# CONDITION OBJECT                                                                                                
 | Name           |   Type    | Default          | Description                                                             |
 | -------------- | :-------: | ---------------- | ----------------------------------------------------------------------- |
 | `entity`       | `string`  | **Required**     | Entity_id of the entity to match. Required if conditions is specified.  |
