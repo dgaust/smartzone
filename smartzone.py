@@ -37,14 +37,21 @@ class smartzone(hass.Hass):
          self.lowerbounds = float(self.entities["lowerbound"])
       except Exception as ex:
          self.log(ex)
-      
-      self.autocontrol = True
-
-      self.conditions = []
-      try:
+            
+      if "conditions" in self.args:
          self.conditions = self.args["conditions"]
-      except:
-         pass
+         for items in self.conditions:
+            entity = items["entity"]
+            self.listen_state(self.conditionchange, entity)
+      else:
+         self.conditions = []
+
+      if "manualoverride" in self.args:
+         self.overridezone = self.entities["manualoverride"]
+         self.hasoverride = True
+      else:
+         self.hasoverride = False
+
          
       self.randomdelay = random.randrange(0,3)
 
@@ -52,13 +59,6 @@ class smartzone(hass.Hass):
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
 
-      # setup the listeners for each condition so the change is reflected immediately.
-      try:
-        for items in self.conditions:
-            entity = items["entity"]
-            self.listen_state(self.conditionchange, entity)
-      except Exception as ex:
-        self.log("Conditions listener loop exception: " + ex)
 
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
@@ -78,18 +78,12 @@ class smartzone(hass.Hass):
          self.log(ex)
       self.doaction()
 
-   def doaction(self):
+   def doaction(self):    
       
-      try:
-         zoneoverride = self.entities["manualoverride"]
-         if self.get_state(zoneoverride) == "on":
-            self.autocontrol = False
-            self.log("Automatic updates are disabled")
-            return
-      except:
-         # self.log("No override provided")
-         pass
-               
+      if self.hasoverride and self.get_state(zoneoverride) == "on":
+         self.log("Automatic updates are disabled.")
+         return
+              
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
       currenttemp = float(self.get_state(self.localtempsensor))
       
