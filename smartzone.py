@@ -8,19 +8,25 @@ class smartzone(hass.Hass):
    def initialize(self):
       
       # Initialise the minimum entities required to control the zone.
+      # 
       # Required:
-      # climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
-      # zoneswitch: The switch domain device that controls the zone
-      # localtempsensor: The sensor that reports a temperature as state
+      #  climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
+      #  zoneswitch: The switch domain device that controls the zone
+      #  localtempsensor: The sensor that reports a temperature as state
       
-      # upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
-      # lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
+      #  upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
+      #  lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
       
       # Optional
+      #
       # manualoverride: Optional input boolean that provides allows for manual control. If the input boolean is on, then no action will be taken.   
+             
       # conditions:
-      #   entity: the entity to watch for state changes to evaluate whether the condition is true.
-      #   targetstate: the state the entity must be in for automatic control to be triggered
+      #   - entity: the entity to watch for state changes to evaluate whether the condition is true.
+      #     targetstate: the state the entity must be in for automatic control to be triggered
+      #
+      # You can add multiple conditions that need to be met for automatic action to be undertaken. ALL conditions must be met for 
+      # the automatic action to be taken.
       
       try: 
          self.entities = self.args["entities"]
@@ -31,23 +37,28 @@ class smartzone(hass.Hass):
          self.lowerbounds = float(self.entities["lowerbound"])
       except Exception as ex:
          self.log(ex)
+      
       self.autocontrol = True
 
+      self.conditions = []
       try:
          self.conditions = self.args["conditions"]
-         self.conditionentity = self.conditions["entity"]
-         self.conditionstate = self.conditions["targetstate"]
-         self.log("entity " + self.conditionentity + " should be " + self.conditionstate + " before zone will open.")
       except:
          pass
          
       self.randomdelay = random.randrange(0,3)
+
+      # setup various 
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
+
+      # setup the listeners for each condition so the change is reflected immediately.
       try:
-         self.listen_state(self.conditionchange, self.conditionentity)
-      except:
-         pass
+        for items in self.conditions:
+            entity = items["entity"]
+            self.listen_state(self.conditionchange, entity)
+      except Exception as ex:
+        self.log("Conditions listener loop exception: " + ex)
 
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
@@ -78,25 +89,19 @@ class smartzone(hass.Hass):
       except:
          self.log("No override provided")
 
-      isconditionmet = True
-      try:
-         state = self.get_state(self.conditionentity)
-         if state == self.conditionstate:
-            isconditionmet = True
-         else:
-            # we still want to run, and just turn the zone off when the condition is not met.
-            isconditionmet = False
-         self.log("Has conditions and the condition is met: " + str(isconditionmet))
-      except:
-         pass
-         
+      isconditionmet = self.IsConditionMet()
+      self.log("Our condition check says that all conditions match: " + str(isconditionmet))
+
+               
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
       currenttemp = float(self.get_state(self.localtempsensor))
+      
       # Target temp is grabbed from a climate device.
       targettemp = float(self.get_state(self.targetempsensor, attribute="temperature"))
       climatetemp = float(self.get_state(self.targetempsensor, attribute="current_temperature"))
       currentswitchstate = self.get_state(self.aczoneswitch)    
       getmode = self.get_state(self.targetempsensor)
+      
       if getmode == 'off' or getmode == 'heat_cool':
          # Attempt to guess the mode of the aircon, especially if heat_cool mode. If off, this just allows for zones to be open in preparation
          # of the aircon being switch on. Mode will change depending on the set point.
@@ -106,6 +111,7 @@ class smartzone(hass.Hass):
             mode = "heat"
       else:
          mode = getmode
+      
       # lowerrange is the temperature set by the climate device, minus the lower bound
       # For example, if lower bound is 0.5 and the target temp of the climate device is 23, the lower bound will be 22.5.
       lowerrange = targettemp - self.lowerbounds
@@ -115,8 +121,6 @@ class smartzone(hass.Hass):
       # this will give you the temperature range that the zone should be open for
       # in this case, if the currenttemp range is between 22.5 and 24 the zone will open. If not, the zone will close.
       
-      # If switch is on, and we drop down past the lowerbound, turn it off.
-      # If the switch is off, and we go over the upper bound, turn it on.
       time.sleep(self.randomdelay)
       if isconditionmet:
          if mode == "cool":
@@ -150,3 +154,21 @@ class smartzone(hass.Hass):
       time.sleep(self.randomdelay)
       if self.get_state(self.aczoneswitch) == "on":
          self.switchoff()
+
+   def IsConditionMet(self):
+   # Iterate through the conditions and check if they are all true. If not, conditions are not met
+      NumberOfConditions = len(self.conditions)
+      if NumberOfConditions == 0:
+         return True
+      try:
+         for item in self.conditions:
+            entity = item["entity"]
+            targetstate = item["targetstate"]
+            # self.log(str(entity) + " should be " + str(targetstate))
+            state = self.get_state(entity)
+            if str(state.lower()) != str(targetstate.lower()):
+               return False
+      except Exception as dex:
+         self.log("Condition loop error: " + dex)
+         return True
+      return True
