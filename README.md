@@ -28,26 +28,27 @@ guestroomsmartzone:
 
 Here is what every option means:
 
-| Name               |   Type    | Default      | Description                                                             |
-| ------------------ | :-------: | ------------ | ----------------------------------------------------------------------- |
-| `climatedevice`    | `string`  | **Required** | An entity_id within the `climate` domain.                               |
-| `zoneswitch`       | `string`  | **Required** | An entity_id within the `switch` domain.                                |
-| `localtempsensor`  | `string`  | Optional     | An entity_id within the `camera` domain, for streaming live vacuum map. |
-| `manualoverride`   | `string`  | Optional     | Entity_id of an input_boolean                                           |
-| `coolingoffset`    | `string`  | `default`    | Path to image of your vacuum cleaner. Better to have `png` or `svg`.    |
-| `heatingoffset`    | `boolean` | `true`       | Show friendly name of the vacuum.                                       |
-| `conditions`       | `boolean` | `false`      | Compact view without image.                                             |
-| `stats`            | `object`  | Optional     | Custom per state stats for your vacuum cleaner                          |
-| `actions`          | `object`  | Optional     | Custom actions for your vacuum cleaner.                                 |
+| Name               |   Type       | Default      | Description                                                             |
+| ------------------ | :----------: | ------------ | ----------------------------------------------------------------------- |
+| `climatedevice`    | `string`     | **Required** | An entity_id within the `climate` domain.                               |
+| `zoneswitch`       | `string`     | **Required** | An entity_id within the `switch` domain.                                |
+| `localtempsensor`  | `string`     | Optional     | An entity_id within the `camera` domain, for streaming live vacuum map. |
+| `manualoverride`   | `string`     | Optional     | Entity_id of an input_boolean                                           |
+| `coolingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
+| `heatingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
+| `conditions`       | `object`     | Optional     | Conditions object                                                       |
 
 
+| ** TEMPERATURE OFFSET OBJECT **                                                                                     |
 | Name           |   Type    | Default      | Description                                                             |
 | -------------- | :-------: | ------------ | ----------------------------------------------------------------------- |
-| `upperbound`| `float`  | Optional | An entity_id within the `climate` domain.                               |
-| `lowerbound`   | `float`  | optional | An entity_id within the `switch` domain.                                |
+| `upperbound`   | `float`   | Required     | Value above setpoint that localtempsensor can reach. Required if coolingoffset or heatingoffset is specified                     |
+| `lowerbound`   | `float`   | Required     | Value below setpoint that localtempsensor can reach                     |
 
+
+| ** CONDITION OBJECT **                                                                                              |
 | Name           |   Type    | Default      | Description                                                             |
 | -------------- | :-------: | ------------ | ----------------------------------------------------------------------- |
-| `entity`| `string`  | Optional | An entity_id within the `climate` domain.                               |
-| `targetstate`   | `string`  | optional | An entity_id within the `switch` domain.                                |
+| `entity`       | `string`  | Required     | An entity_id within the `climate` domain.                               |
+| `targetstate`  | `string`  | Required     | An entity_id within the `switch` domain.                                |
 
