@@ -88,10 +88,6 @@ class smartzone(hass.Hass):
             return
       except:
          self.log("No override provided")
-
-      isconditionmet = self.IsConditionMet()
-      self.log("Our condition check says that all conditions match: " + str(isconditionmet))
-
                
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
       currenttemp = float(self.get_state(self.localtempsensor))
@@ -122,7 +118,7 @@ class smartzone(hass.Hass):
       # in this case, if the currenttemp range is between 22.5 and 24 the zone will open. If not, the zone will close.
       
       time.sleep(self.randomdelay)
-      if isconditionmet:
+      if self.IsConditionMet():
          if mode == "cool":
             if (currenttemp < lowerrange) and currentswitchstate == "on":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're below target, so switching zone off.")
@@ -163,10 +159,10 @@ class smartzone(hass.Hass):
       try:
          for item in self.conditions:
             entity = item["entity"]
-            targetstate = item["targetstate"]
-            # self.log(str(entity) + " should be " + str(targetstate))
+            targetstate = item["targetstate"]            
             state = self.get_state(entity)
             if str(state.lower()) != str(targetstate.lower()):
+               self.log(entity + " should be " + targetstate + " but it's not, it's " + state)
                return False
       except Exception as dex:
          self.log("Condition loop error: " + dex)
