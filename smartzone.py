@@ -87,7 +87,8 @@ class smartzone(hass.Hass):
             self.log("Automatic updates are disabled")
             return
       except:
-         self.log("No override provided")
+         # self.log("No override provided")
+         pass
                
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
       currenttemp = float(self.get_state(self.localtempsensor))
