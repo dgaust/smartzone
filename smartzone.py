@@ -41,8 +41,7 @@ class smartzone(hass.Hass):
       if "conditions" in self.args:
          self.conditions = self.args["conditions"]
          for items in self.conditions:
-            entity = items["entity"]
-            self.listen_state(self.conditionchange, entity)
+            self.listen_state(self.conditionchange, items["entity"])
       else:
          self.conditions = []
 
