@@ -10,13 +10,20 @@ class smartzone(hass.Hass):
       # Initialise the minimum entities required to control the zone.
       # 
       # Required:
+      #
       #  climatedevice: The climate domain device from ha (i.e. climate.airconditioner)
       #  zoneswitch: The switch domain device that controls the zone
-      #  localtempsensor: The sensor that reports a temperature as state
-      
+      #  localtempsensor: The sensor that reports a temperature as state 
       #  upperbound: The amount above the climate device setpoint the local temperature sensor should be able to achieve before the action.
       #  lowerbound: The amount below the climate device setpoint the local temperature sensor should be able to achieve before the action.
       
+      #  coolingoffset:
+      #     upperbound:
+      #     lowerbound:
+      #  heatingoffset:
+      #     upperbound:
+      #     lowerbound:   
+
       # Optional
       #
       # manualoverride: Optional input boolean that provides allows for manual control. If the input boolean is on, then no action will be taken.   
@@ -27,17 +34,55 @@ class smartzone(hass.Hass):
       #
       # You can add multiple conditions that need to be met for automatic action to be undertaken. ALL conditions must be met for 
       # the automatic action to be taken.
+
+      #  Example configuration
+      #
+      #  guestroomsmartzone:
+      #     module: smartzone
+      #     class: smartzone
+      #     entities:
+      #        climatedevice: climate.daikin_ac
+      #        zoneswitch: switch.daikin_ac_guest
+      #        localtempsensor: sensor.temperature_18
+      #        manualoverride: input_boolean.guestairconzone
+      #     coolingoffset:
+      #        upperbound: 1.5
+      #        lowerbound: 0.5
+      #     heatingoffset:
+      #        upperbound: 0.5
+      #        lowerbound: 0.5
+      #     conditions:
+      #        - entity: binary_sensor.spare_bedroom_window
+      #          targetstate: "off"
+      #        - entity: input_boolean.guest_mode
+      #          targetstate: "on"
       
       try: 
          self.entities = self.args["entities"]
          self.targetempsensor = self.entities["climatedevice"]
          self.aczoneswitch = self.entities["zoneswitch"]
          self.localtempsensor = self.entities["localtempsensor"]
-         self.upperbounds = float(self.entities["upperbound"])
-         self.lowerbounds = float(self.entities["lowerbound"])
       except Exception as ex:
          self.log(ex)
             
+      if "coolingoffset" in self.args:
+         self.coolingupperbounds = self.args["coolingoffset"]["upperbound"]
+         self.coolinglowerbounds = self.args["coolingoffset"]["lowerbound"]
+         self.log("Got cooling settings from updated configuration: " + str(self.coolingupperbounds) + " over and " + str(self.coolinglowerbounds) + " under")
+      else:       
+         self.coolingupperbounds = 1.0
+         self.coolinglowerbounds = 1.0
+         self.log("Using default cooling settings")
+
+      if "heatingoffset" in self.args:
+         self.heatingupperbounds = self.args["heatingoffset"]["upperbound"]
+         self.heatinglowerbounds = self.args["heatingoffset"]["lowerbound"]
+         self.log("Got heating settings from updated configuration: " + str(self.heatingupperbounds) + " over and " + str(self.heatingupperbounds) + " under")
+      else:
+         self.heatingupperbounds = 1.0
+         self.heatinglowerbounds = 1.0
+         self.log("Using default heating settings")
+
       if "conditions" in self.args:
          self.conditions = self.args["conditions"]
          for items in self.conditions:
@@ -45,12 +90,11 @@ class smartzone(hass.Hass):
       else:
          self.conditions = []
 
-      if "manualoverride" in self.args:
+      if "manualoverride" in self.entities:
          self.overridezone = self.entities["manualoverride"]
          self.hasoverride = True
       else:
          self.hasoverride = False
-
          
       self.randomdelay = random.randrange(0,3)
 
@@ -58,43 +102,42 @@ class smartzone(hass.Hass):
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
 
-
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
       self.doaction()
 
    def inroomtempchange(self, entity, attribute, old, new, kwargs):
-      try:
-         self.log("Local temp change reported by: " + entity + ", from " + str(old) + " to " + str(new) + ".")
-      except Exception as ex:
-         self.log(ex)
+      self.log("Local temp change reported by: " + entity + ", from " + str(old) + " to " + str(new) + ".")
       self.doaction()
 
    def statechange(self, entity, attribute, old, new, kwargs):
-      try:
-         self.log("Climate temp change reported: " + entity + ", from " + str(old) + " to " + str(new) + ".")
-      except Exception as ex:
-         self.log(ex)
+      self.log("Climate temp change reported: " + entity + ", from " + str(old) + " to " + str(new) + ".")
       self.doaction()
 
    def doaction(self):    
       
-      if self.hasoverride and self.get_state(zoneoverride) == "on":
+      if self.hasoverride and self.get_state(self.overridezone) == "on":
          self.log("Automatic updates are disabled.")
          return
-              
+
+      time.sleep(self.randomdelay)   
+
       # Current temp is grabbed from a local temperature sensor. It can either be a single sensor, or a sensor like min/max
       currenttemp = float(self.get_state(self.localtempsensor))
       
       # Target temp is grabbed from a climate device.
       targettemp = float(self.get_state(self.targetempsensor, attribute="temperature"))
+
+      # Gets the current temperature from the climate device sensor
       climatetemp = float(self.get_state(self.targetempsensor, attribute="current_temperature"))
+
       currentswitchstate = self.get_state(self.aczoneswitch)    
       getmode = self.get_state(self.targetempsensor)
       
       if getmode == 'off' or getmode == 'heat_cool':
-         # Attempt to guess the mode of the aircon, especially if heat_cool mode. If off, this just allows for zones to be open in preparation
-         # of the aircon being switch on. Mode will change depending on the set point.
+         # Given the aircon is off, or in auto mode this is an attempt to guess the mode of the aircon. 
+         # This will allow the zones to be ready for the aircon to be switch on. This will be re-calculated 
+         # when/if the setpoint changes.
          if (climatetemp > targettemp):
             mode = "cool"
          else:
@@ -102,16 +145,23 @@ class smartzone(hass.Hass):
       else:
          mode = getmode
       
+      if mode == "cool" or mode == "fan_only" or mode == "dry":
+         lowerrange = targettemp - self.coolinglowerbounds
+         upperrange = targettemp + self.coolingupperbounds
+      else:
+         lowerrange = targettemp - self.heatinglowerbounds
+         upperrange = targettemp + self.heatingupperbounds 
       # lowerrange is the temperature set by the climate device, minus the lower bound
       # For example, if lower bound is 0.5 and the target temp of the climate device is 23, the lower bound will be 22.5.
-      lowerrange = targettemp - self.lowerbounds
+      
       # upperrange is the temperature set by the climate device, plus the upper bound
       # For example, if upper bound is 1 and the target temp of the climate device is 23, the lower bound will be 24.
-      upperrange = targettemp + self.upperbounds  
+      
       # this will give you the temperature range that the zone should be open for
       # in this case, if the currenttemp range is between 22.5 and 24 the zone will open. If not, the zone will close.
       
-      time.sleep(self.randomdelay)
+      
+
       if self.IsConditionMet():
          if mode == "cool":
             if (currenttemp < lowerrange) and currentswitchstate == "on":
