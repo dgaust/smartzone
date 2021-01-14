@@ -1,7 +1,7 @@
 loungesmartzone:
   module: smartzone
   class: smartzone
-  entities: 
+  entities:
     climatedevice: climate.daikin_ac
     zoneswitch: switch.daikin_ac_living
     localtempsensor: sensor.great_room_sonoff_temperature
@@ -11,7 +11,7 @@ loungesmartzone:
 mediasmartzone:
   module: smartzone
   class: smartzone
-  entities: 
+  entities:
     climatedevice: climate.daikin_ac
     zoneswitch: switch.daikin_ac_media
     localtempsensor: sensor.media_room_temp
@@ -19,13 +19,13 @@ mediasmartzone:
     upperbound: 1.0
     lowerbound: 0.5
   conditions:
-    entity: remote.media_room
-    targetstate: 'on'
+    - entity: remote.media_room
+      targetstate: "on"
 
 masterbedsmartzone:
   module: smartzone
   class: smartzone
-  entities: 
+  entities:
     climatedevice: climate.daikin_ac
     zoneswitch: switch.daikin_ac_master
     localtempsensor: sensor.master_bedroom_sensor
@@ -36,12 +36,43 @@ masterbedsmartzone:
 bridgetsmartzone:
   module: smartzone
   class: smartzone
-  entities: 
+  entities:
     climatedevice: climate.daikin_ac
     zoneswitch: switch.daikin_ac_bridget
     localtempsensor: sensor.bridgettemp
+    manualoverride: input_boolean.bridgetzoneoverride
     upperbound: 1.0
     lowerbound: 1.0
   conditions:
-    entity: binary_sensor.bridget_s_window_sensor
-    targetstate: 'off'
+    - entity: binary_sensor.bridget_s_window_sensor
+      targetstate: "off"
+
+guestroomsmartzone:
+  module: smartzone
+  class: smartzone
+  entities:
+    climatedevice: climate.daikin_ac
+    zoneswitch: switch.daikin_ac_guest
+    localtempsensor: sensor.temperature_18
+    manualoverride: input_boolean.guestairconzone
+    upperbound: 0.5
+    lowerbound: 0.5
+  conditions:
+    - entity: binary_sensor.spare_bedroom_window
+      targetstate: "off"
+    - entity: input_boolean.guest_mode
+      targetstate: "on"
+
+alexsmartzone:
+  module: smartzone
+  class: smartzone
+  entities:
+    climatedevice: climate.daikin_ac
+    zoneswitch: switch.daikin_ac_alex
+    localtempsensor: sensor.alexs_temperature
+    manualoverride: input_boolean.alexsmartzone
+    upperbound: 1.5
+    lowerbound: 0.5
+  conditions:
+    - entity: binary_sensor.alex_s_window_sensor
+      targetstate: "off"
