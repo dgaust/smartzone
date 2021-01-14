@@ -9,7 +9,7 @@ loungesmartzone:
     upperbound: 1.0
     lowerbound: 1.0
   heatingoffset:
-    upperbound: 1.0
+    upperbound: 0.5
     lowerbound: 1.0
 
 mediasmartzone:
@@ -24,7 +24,7 @@ mediasmartzone:
     upperbound: 1.0
     lowerbound: 1.0
   heatingoffset:
-    upperbound: 1.0
+    upperbound: 0.5
     lowerbound: 1.0
   conditions:
     - entity: remote.media_room
@@ -42,7 +42,7 @@ masterbedsmartzone:
     upperbound: 1.0
     lowerbound: 1.0
   heatingoffset:
-    upperbound: 1.0
+    upperbound: 0.5
     lowerbound: 1.0
 
 bridgetsmartzone:
@@ -54,10 +54,10 @@ bridgetsmartzone:
     localtempsensor: sensor.bridgettemp
     manualoverride: input_boolean.bridgetzoneoverride
   coolingoffset:
-    upperbound: 1.0
+    upperbound: 0.5
     lowerbound: 1.0
   heatingoffset:
-    upperbound: 1.0
+    upperbound: 0.5
     lowerbound: 1.0
   conditions:
     - entity: binary_sensor.bridget_s_window_sensor
@@ -72,11 +72,11 @@ guestroomsmartzone:
     localtempsensor: sensor.temperature_18
     manualoverride: input_boolean.guestairconzone
   coolingoffset:
-    upperbound: 1.5
+    upperbound: 1.0
     lowerbound: 0.5
   heatingoffset:
     upperbound: 0.5
-    lowerbound: 0.5
+    lowerbound: 1
   conditions:
     - entity: binary_sensor.spare_bedroom_window
       targetstate: "off"
