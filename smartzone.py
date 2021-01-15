@@ -4,29 +4,6 @@ import random
 
 class smartzone(hass.Hass):
    """SMART ZONE CONTROL"""
-   
-   #  Example configuration
-   #
-   #  guestroomsmartzone:
-   #     module: smartzone
-   #     class: smartzone
-   #     entities:
-   #        climatedevice: climate.daikin_ac
-   #        zoneswitch: switch.daikin_ac_guest
-   #        localtempsensor: sensor.temperature_18
-   #        manualoverride: input_boolean.guestairconzone
-   #     coolingoffset:
-   #        upperbound: 1.5
-   #        lowerbound: 0.5
-   #     heatingoffset:
-   #        upperbound: 0.5
-   #        lowerbound: 0.5
-   #     conditions:
-   #        - entity: binary_sensor.spare_bedroom_window
-   #          targetstate: "off"
-   #        - entity: input_boolean.guest_mode
-   #          targetstate: "on"
-
    def initialize(self): 
       try: 
          self.entities = self.args["entities"]
