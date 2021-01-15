@@ -4,9 +4,30 @@ import random
 
 class smartzone(hass.Hass):
    """SMART ZONE CONTROL"""
-    
-   def initialize(self):
-           
+   
+   #  Example configuration
+   #
+   #  guestroomsmartzone:
+   #     module: smartzone
+   #     class: smartzone
+   #     entities:
+   #        climatedevice: climate.daikin_ac
+   #        zoneswitch: switch.daikin_ac_guest
+   #        localtempsensor: sensor.temperature_18
+   #        manualoverride: input_boolean.guestairconzone
+   #     coolingoffset:
+   #        upperbound: 1.5
+   #        lowerbound: 0.5
+   #     heatingoffset:
+   #        upperbound: 0.5
+   #        lowerbound: 0.5
+   #     conditions:
+   #        - entity: binary_sensor.spare_bedroom_window
+   #          targetstate: "off"
+   #        - entity: input_boolean.guest_mode
+   #          targetstate: "on"
+
+   def initialize(self): 
       try: 
          self.entities = self.args["entities"]
          self.targetempsensor = self.entities["climatedevice"]
@@ -18,7 +39,6 @@ class smartzone(hass.Hass):
       if "coolingoffset" in self.args:
          self.coolingupperbounds = self.args["coolingoffset"]["upperbound"]
          self.coolinglowerbounds = self.args["coolingoffset"]["lowerbound"]
-         self.log("Got cooling settings from updated configuration: " + str(self.coolingupperbounds) + " over and " + str(self.coolinglowerbounds) + " under")
       else:       
          self.coolingupperbounds = 1.0
          self.coolinglowerbounds = 1.0
@@ -27,7 +47,6 @@ class smartzone(hass.Hass):
       if "heatingoffset" in self.args:
          self.heatingupperbounds = self.args["heatingoffset"]["upperbound"]
          self.heatinglowerbounds = self.args["heatingoffset"]["lowerbound"]
-         self.log("Got heating settings from updated configuration: " + str(self.heatingupperbounds) + " over and " + str(self.heatingupperbounds) + " under")
       else:
          self.heatingupperbounds = 1.0
          self.heatinglowerbounds = 1.0
@@ -47,8 +66,6 @@ class smartzone(hass.Hass):
          self.hasoverride = False
          
       self.randomdelay = random.randrange(0,3)
-
-      # setup various 
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
 
@@ -80,7 +97,6 @@ class smartzone(hass.Hass):
 
       # Gets the current temperature from the climate device sensor
       climatetemp = float(self.get_state(self.targetempsensor, attribute="current_temperature"))
-
       currentswitchstate = self.get_state(self.aczoneswitch)    
       getmode = self.get_state(self.targetempsensor)
       
@@ -101,16 +117,6 @@ class smartzone(hass.Hass):
       else:
          lowerrange = targettemp - self.heatinglowerbounds
          upperrange = targettemp + self.heatingupperbounds 
-      # lowerrange is the temperature set by the climate device, minus the lower bound
-      # For example, if lower bound is 0.5 and the target temp of the climate device is 23, the lower bound will be 22.5.
-      
-      # upperrange is the temperature set by the climate device, plus the upper bound
-      # For example, if upper bound is 1 and the target temp of the climate device is 23, the lower bound will be 24.
-      
-      # this will give you the temperature range that the zone should be open for
-      # in this case, if the currenttemp range is between 22.5 and 24 the zone will open. If not, the zone will close.
-      
-      
 
       if self.IsConditionMet():
          if mode == "cool":
@@ -125,7 +131,7 @@ class smartzone(hass.Hass):
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting a bit warm so switch zone off")
                self.switchoff()
             elif (currenttemp < lowerrange):
-               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting cool, so switching zone on")
+               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". It's getting cool, turning zone back on")
                self.switchon()
          elif mode == "fan_only" or mode == "dry":
             self.log("Fan or dry mode, so open the zone")
