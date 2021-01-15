@@ -3,10 +3,8 @@ import time
 import random
 
 class smartzone(hass.Hass):
-   """SMART ZONE CONTROL"""
-    
-   def initialize(self):
-           
+   """SMART ZONE CONTROL"""   
+   def initialize(self):          
       try: 
          self.entities = self.args["entities"]
          self.targetempsensor = self.entities["climatedevice"]
@@ -117,20 +115,28 @@ class smartzone(hass.Hass):
             if (currenttemp < lowerrange) and currentswitchstate == "on":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're below target, so switching zone off.")
                self.switchoff()
+            elif (currenttemp < lowerrange) and currentswitchstate == "off":
+               self.log(str(currenttemp) + " is below the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already off.")
             elif (currenttemp > upperrange) and currentswitchstate == "off":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're above target, switching zone on")
                self.switchon()
+            elif (currenttemp > upperrange) and currentswitchstate == "on":
+               self.log(str(currenttemp) + " is above the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already on.")
             else:
                self.log(str(currenttemp) + " is in the the target range of " + str(lowerrange) + " to " + str(upperrange))
          elif mode == "heat":
-            if (currenttemp >= upperrange):
+            if (currenttemp >= upperrange) and currentswitchstate == "on":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting a bit warm so switch zone off")
                self.switchoff()
-            elif (currenttemp < lowerrange):
+            elif (currenttemp >= upperrange) and currentswitchstate == "off":
+               self.log(str(currenttemp) + " is above the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already off.")               
+            elif (currenttemp < lowerrange) and currentswitchstate == "off":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting cool, so switching zone on")
                self.switchon()
+            elif (currenttemp < lowerrange) and currentswitchstate == "on":
+               self.log(str(currenttemp) + " is below the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already on.")          
             else:
-                self.log(str(currenttemp) + " is in the the target range of " + str(lowerrange) + " to " + str(upperrange))
+               self.log(str(currenttemp) + " is in the the target range of " + str(lowerrange) + " to " + str(upperrange))
          elif mode == "fan_only" or mode == "dry":
             self.log("Fan or dry mode, so open the zone")
             self.switchon()
@@ -164,4 +170,4 @@ class smartzone(hass.Hass):
             self.log("Condition loop error: " + dex)
             return True
       else:
-          return True
+         return True
