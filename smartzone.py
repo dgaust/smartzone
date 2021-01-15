@@ -157,17 +157,18 @@ class smartzone(hass.Hass):
 
    def IsConditionMet(self):
    # Iterate through the conditions and check if they are all true. If not, conditions are not met
-      if "conditions" in self.args:       
-         try:
-            for item in self.conditions:
-               entity = item["entity"]
-               targetstate = item["targetstate"]            
-               state = self.get_state(entity)
-               if str(state.lower()) != str(targetstate.lower()):
-                  self.log(entity + " should be " + targetstate + " but it's not, it's " + state)
-                  return False
-         except Exception as dex:
-            self.log("Condition loop error: " + dex)
-            return True
-      else:
+      NumberOfConditions = len(self.conditions)
+      if NumberOfConditions == 0:
          return True
+      try:
+         for item in self.conditions:
+            entity = item["entity"]
+            targetstate = item["targetstate"]            
+            state = self.get_state(entity)
+            if str(state.lower()) != str(targetstate.lower()):
+               self.log(entity + " should be " + targetstate + " but it's not, it's " + state)
+               return False
+      except Exception as dex:
+         self.log("Condition loop error: " + dex)
+         return True
+      return True
