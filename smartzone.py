@@ -130,7 +130,7 @@ class smartzone(hass.Hass):
             if (currenttemp >= upperrange) and currentswitchstate == "on":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting a bit warm so switch zone off")
                self.switchoff()
-            elif (currenttemp < lowerrange) and currentswitchstate == "off"):
+            elif (currenttemp < lowerrange) and currentswitchstate == "off":
                self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". It's getting cool, turning zone back on")
                self.switchon()
          elif mode == "fan_only" or mode == "dry":
