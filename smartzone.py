@@ -113,12 +113,12 @@ class smartzone(hass.Hass):
       if self.IsConditionMet():
          if mode == "cool":
             if (currenttemp < lowerrange) and currentswitchstate == "on":
-               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're below target, so switching zone off.")
+               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're at or below lower target, so switching zone off.")
                self.switchoff()
             elif (currenttemp < lowerrange) and currentswitchstate == "off":
                self.log(str(currenttemp) + " is below the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already off.")
             elif (currenttemp > upperrange) and currentswitchstate == "off":
-               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're above target, switching zone on")
+               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're at or above upper target, switching zone on")
                self.switchon()
             elif (currenttemp > upperrange) and currentswitchstate == "on":
                self.log(str(currenttemp) + " is above the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already on.")
@@ -126,7 +126,7 @@ class smartzone(hass.Hass):
                self.log(str(currenttemp) + " is in the the target range of " + str(lowerrange) + " to " + str(upperrange))
          elif mode == "heat":
             if (currenttemp >= upperrange) and currentswitchstate == "on":
-               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting a bit warm so switch zone off")
+               self.log("Current temp: " + str(currenttemp) + ", Target temp is: " + str(targettemp) + ". Target range is " + str(lowerrange) + " to " + str(upperrange) + ". We're getting a bit warm so switching zone off")
                self.switchoff()
             elif (currenttemp >= upperrange) and currentswitchstate == "off":
                self.log(str(currenttemp) + " is above the target range of " + str(lowerrange) + " to " + str(upperrange) + " but zone is already off.")               
