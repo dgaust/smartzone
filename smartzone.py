@@ -166,7 +166,7 @@ class smartzone(hass.Hass):
             targetstate = item["targetstate"]            
             state = self.get_state(entity)
             if str(state.lower()) != str(targetstate.lower()):
-               self.log(entity + " should be " + targetstate + " but it's not, it's " + state)
+               self.log(entity + " needs to be in " + targetstate + " state but it's not, so we'll ignore the temperature change")
                return False
       except Exception as dex:
          self.log("Condition loop error: " + dex)
