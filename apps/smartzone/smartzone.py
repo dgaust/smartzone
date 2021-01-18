@@ -49,7 +49,16 @@ class smartzone(hass.Hass):
       # setup various 
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
+#      self.listen_state(self.climatedevicechange, self.targetempsensor)
 
+#   def climatedevicechange(self, entity, attribute, old, new, kwargs):
+#      self.log(str(new))
+#      if new is not "off":
+#         self.log("The climate device state has changed, updating zones accordingly.")
+#         self.doaction()
+#      else:
+#         self.log("Climate State = " + new)
+      
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
       self.doaction()
