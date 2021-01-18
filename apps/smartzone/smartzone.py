@@ -91,7 +91,7 @@ class smartzone(hass.Hass):
       currentswitchstate = self.get_state(self.aczoneswitch)    
       getmode = self.get_state(self.targetempsensor)
       
-      if getmode == 'off' or getmode == 'heat_cool':
+      if getmode == 'off' or getmode == 'heat_cool' or getmode == 'auto':
          # Given the aircon is off, or in auto mode this is an attempt to guess the mode of the aircon. 
          # This will allow the zones to be ready for the aircon to be switch on. This will be re-calculated 
          # when/if the setpoint changes.
