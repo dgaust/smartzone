@@ -101,7 +101,7 @@ class smartzone(hass.Hass):
             mode = "heat"
       else:
          mode = getmode
-      
+      self.log("Climate Mode: " + mode)
       if mode == "cool" or mode == "fan_only" or mode == "dry":
          lowerrange = targettemp - self.coolinglowerbounds
          upperrange = targettemp + self.coolingupperbounds
