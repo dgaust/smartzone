@@ -1,6 +1,7 @@
 import appdaemon.plugins.hass.hassapi as hass
 import time
 import random
+import json
 
 class smartzone(hass.Hass):
    """SMART ZONE CONTROL"""   
@@ -10,9 +11,10 @@ class smartzone(hass.Hass):
          self.targetempsensor = self.entities["climatedevice"]
          self.aczoneswitch = self.entities["zoneswitch"]
          self.localtempsensor = self.entities["localtempsensor"]
+         self.exteriortempsensor = self.entities["exteriortempsensor"]
       except Exception as ex:
          self.log(ex)
-            
+
       if "coolingoffset" in self.args:
          self.coolingupperbounds = self.args["coolingoffset"]["upperbound"]
          self.coolinglowerbounds = self.args["coolingoffset"]["lowerbound"]
@@ -49,15 +51,19 @@ class smartzone(hass.Hass):
       # setup various 
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
       self.listen_state(self.statechange, self.localtempsensor)
-#      self.listen_state(self.climatedevicechange, self.targetempsensor)
+      self.listen_state(self.climatedevicechange, self.targetempsensor)
 
-#   def climatedevicechange(self, entity, attribute, old, new, kwargs):
-#      self.log(str(new))
-#      if new is not "off":
-#         self.log("The climate device state has changed, updating zones accordingly.")
-#         self.doaction()
-#      else:
-#         self.log("Climate State = " + new)
+   def climatedevicechange(self, entity, attribute, old, new, kwargs):
+      self.log("New: " + str(new))
+      self.log("Old: " + str(old))
+      if old == "off" and new != "off" and self.IsConditionMet():
+         self.log("The climate device state has changed, updating zones accordingly.")
+         time.sleep(self.randomdelay)  
+         self.switchon()
+      elif new == "off":
+         self.log("Climate State = " + new)
+         time.sleep(self.randomdelay)  
+         self.switchoff()
       
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
@@ -95,13 +101,14 @@ class smartzone(hass.Hass):
          # Given the aircon is off, or in auto mode this is an attempt to guess the mode of the aircon. 
          # This will allow the zones to be ready for the aircon to be switch on. This will be re-calculated 
          # when/if the setpoint changes.
-         if (climatetemp > targettemp):
+         if climatetemp >= targettemp or float(self.get_state(self.exteriortempsensor)) >= targettemp:
             mode = "cool"
          else:
             mode = "heat"
       else:
          mode = getmode
-      self.log("Climate Mode: " + mode)
+      self.log("Climate Mode: " + mode + ". Target temp is: " + str(targettemp) + ", Climate reported temp is: " + str(climatetemp))
+      
       if mode == "cool" or mode == "fan_only" or mode == "dry":
          lowerrange = targettemp - self.coolinglowerbounds
          upperrange = targettemp + self.coolingupperbounds
