@@ -12,6 +12,7 @@ class smartzone(hass.Hass):
          self.aczoneswitch = self.entities["zoneswitch"]
          self.localtempsensor = self.entities["localtempsensor"]
          self.exteriortempsensor = self.entities["exteriortempsensor"]
+         self.localtargettemp = self.entities["localtargettemp"]
       except Exception as ex:
          self.log(ex)
 
@@ -89,7 +90,11 @@ class smartzone(hass.Hass):
       currenttemp = float(self.get_state(self.localtempsensor))
       
       # Target temp is grabbed from a climate device.
-      targettemp = float(self.get_state(self.targetempsensor, attribute="temperature"))
+      try:
+         targettemp =  float(self.get_state(self.localtargettemp))
+         self.log("Using localised target temp instead of centralised temp: " + str(targettemp))
+      except:
+         targettemp =  float(self.get_state(self.targetempsensor, attribute="temperature"))
 
       # Gets the current temperature from the climate device sensor
       climatetemp = float(self.get_state(self.targetempsensor, attribute="current_temperature"))

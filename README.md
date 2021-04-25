@@ -11,6 +11,7 @@ Here is what every option means:
 | `climatedevice`    | `string`     | **Required** | An entity_id within the `climate` domain.                               |
 | `zoneswitch`       | `string`     | **Required** | An entity_id within the `switch` domain.                                |
 | `localtempsensor`  | `string`     | **Required** | An entity_id that has a temperature as its state.                       |
+| `localtargettemp`  | `string`     | **Required** | An entity_id that has a temperature as its state.                       |
 | `manualoverride`   | `string`     | Optional     | Entity_id of an input_boolean                                           |
 | `coolingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
 | `heatingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
