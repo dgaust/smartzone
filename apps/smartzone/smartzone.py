@@ -63,16 +63,16 @@ class smartzone(hass.Hass):
       self.listen_state(self.climatedevicechange, self.targetempsensor)
 
       if self.overridefan:
-         self.listen_state(self.climatefanchange, self.targetempsensor)
-
+         self.listen_state(self.climatefanchange, self.targetempsensor, attribute="fan_mode")
+         
    def climatefanchange(self, entity, attribute, old, new, kwargs):
       # Fix this cause it's shit.... but it works for the time being
-      if new != "off":
+      ison = self.get_state(self.targetempsensor)
+      if ison != "off":
          availablemodes = self.get_state(self.targetempsensor, attribute="fan_modes")
-         currentmode = self.get_state(self.targetempsensor, attribute="fan_mode")
          if str(availablemodes).lower().find("auto") != -1:
-            self.log(str(availablemodes))
-            self.call_service("climate/set_fan_mode", entity_id = self.targetempsensor, fan_mode = currentmode + "/Auto")
+            # self.log(str(availablemodes))
+            self.call_service("climate/set_fan_mode", entity_id = self.targetempsensor, fan_mode = new + "/Auto")
 
    def climatedevicechange(self, entity, attribute, old, new, kwargs):
       self.log("New: " + str(new))
