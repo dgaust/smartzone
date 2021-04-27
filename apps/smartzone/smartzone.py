@@ -16,6 +16,13 @@ class smartzone(hass.Hass):
       except Exception as ex:
          self.log(ex)
 
+      if "autofanoverride" in self.entities:
+         self.overridefan = bool(self.entities["autofanoverride"])
+         self.log("Has override setting which is: " + str(self.overridefan))
+      else:
+         self.overridefan = False
+         self.log("No override fan setting.")
+
       if "coolingoffset" in self.args:
          self.coolingupperbounds = self.args["coolingoffset"]["upperbound"]
          self.coolinglowerbounds = self.args["coolingoffset"]["lowerbound"]
@@ -51,8 +58,21 @@ class smartzone(hass.Hass):
 
       # setup various 
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
+      
       self.listen_state(self.statechange, self.localtempsensor)
       self.listen_state(self.climatedevicechange, self.targetempsensor)
+
+      if self.overridefan:
+         self.listen_state(self.climatefanchange, self.targetempsensor)
+
+   def climatefanchange(self, entity, attribute, old, new, kwargs):
+      # Fix this cause it's shit.... but it works for the time being
+      if new != "off":
+         availablemodes = self.get_state(self.targetempsensor, attribute="fan_modes")
+         currentmode = self.get_state(self.targetempsensor, attribute="fan_mode")
+         if str(availablemodes).lower().find("auto") != -1:
+            self.log(str(availablemodes))
+            self.call_service("climate/set_fan_mode", entity_id = self.targetempsensor, fan_mode = currentmode + "/Auto")
 
    def climatedevicechange(self, entity, attribute, old, new, kwargs):
       self.log("New: " + str(new))
