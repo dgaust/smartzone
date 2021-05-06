@@ -64,7 +64,7 @@ class smartzone(hass.Hass):
 
       if self.overridefan:
          self.listen_state(self.climatefanchange, self.targetempsensor, attribute="fan_mode")
-         
+
    def climatefanchange(self, entity, attribute, old, new, kwargs):
       # Fix this cause it's shit.... but it works for the time being
       ison = self.get_state(self.targetempsensor)
@@ -79,12 +79,15 @@ class smartzone(hass.Hass):
       self.log("Old: " + str(old))
       if old == "off" and new != "off" and self.IsConditionMet():
          self.log("The climate device state has changed, updating zones accordingly.")
+         fanmode = self.get_state(self.targetempsensor, attribute="fan_mode")
+         self.climatefanchange(self, new = fanmode , old = "1", attribute = "ignore", kwargs = "n")
          time.sleep(self.randomdelay)  
          self.switchon()
       elif new == "off":
          self.log("Climate State = " + new)
          time.sleep(self.randomdelay)  
          self.switchoff()
+      
       
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
