@@ -79,10 +79,11 @@ class smartzone(hass.Hass):
       self.log("Old: " + str(old))
       if old == "off" and new != "off" and self.IsConditionMet():
          self.log("The climate device state has changed, updating zones accordingly.")
-         fanmode = self.get_state(self.targetempsensor, attribute="fan_mode")
-         self.climatefanchange(self, new = fanmode , old = "1", attribute = "ignore", kwargs = "n")
          time.sleep(self.randomdelay)  
          self.switchon()
+         if self.overridefan:
+           fanmode = self.get_state(self.targetempsensor, attribute="fan_mode")
+           self.climatefanchange(self, new = fanmode , old = "1", attribute = "ignore", kwargs = "n")        
       elif new == "off":
          self.log("Climate State = " + new)
          time.sleep(self.randomdelay)  
