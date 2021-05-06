@@ -5,6 +5,7 @@ loungesmartzone:
     climatedevice: climate.daikin_ac
     zoneswitch: switch.daikin_ac_living
     localtempsensor: sensor.great_room_sonoff_temperature
+    autofanoverride: true
   coolingoffset:
     upperbound: 1.0
     lowerbound: 1.0

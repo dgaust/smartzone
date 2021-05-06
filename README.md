@@ -13,9 +13,11 @@ Here is what every option means:
 | `localtempsensor`  | `string`     | **Required** | An entity_id that has a temperature as its state.                       |
 | `localtargettemp`  | `string`     | **Required** | An entity_id that has a temperature as its state.                       |
 | `manualoverride`   | `string`     | Optional     | Entity_id of an input_boolean                                           |
+| `autofanoverride`  | `bool`       | Optional     | Set fan to matching Auto mode (Low/Auto, Mid/Auto, High/Auto) on change |
 | `coolingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
 | `heatingoffset`    | `object`     | Optional     | Temperature offset object. If no object provided defaults to 1.0        |
 | `conditions`       | `object`     | Optional     | Condition object. Multiple conditions can be specified                  |
+
 
 ### Temperature Offset Object                                                                                    
 | Name           |   Type    | Default          | Description                                                             |
@@ -40,6 +42,7 @@ guestroomsmartzone:
     zoneswitch: switch.daikin_ac_guest
     localtempsensor: sensor.temperature_18
     manualoverride: input_boolean.guestairconzone
+    autofanoverride: True
     coolingoffset:
       upperbound: 1.5
       lowerbound: 0.5

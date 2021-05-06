@@ -16,6 +16,13 @@ class smartzone(hass.Hass):
       except Exception as ex:
          self.log(ex)
 
+      if "autofanoverride" in self.entities:
+         self.overridefan = bool(self.entities["autofanoverride"])
+         self.log("Has override setting which is: " + str(self.overridefan))
+      else:
+         self.overridefan = False
+         self.log("No override fan setting.")
+
       if "coolingoffset" in self.args:
          self.coolingupperbounds = self.args["coolingoffset"]["upperbound"]
          self.coolinglowerbounds = self.args["coolingoffset"]["lowerbound"]
@@ -51,20 +58,36 @@ class smartzone(hass.Hass):
 
       # setup various 
       self.listen_state(self.inroomtempchange, self.targetempsensor, attribute="temperature")
+      
       self.listen_state(self.statechange, self.localtempsensor)
       self.listen_state(self.climatedevicechange, self.targetempsensor)
+
+      if self.overridefan:
+         self.listen_state(self.climatefanchange, self.targetempsensor, attribute="fan_mode")
+
+   def climatefanchange(self, entity, attribute, old, new, kwargs):
+      # Fix this cause it's shit.... but it works for the time being
+      ison = self.get_state(self.targetempsensor)
+      if ison != "off":
+         availablemodes = self.get_state(self.targetempsensor, attribute="fan_modes")
+         if str(availablemodes).lower().find("auto") != -1:
+            # self.log(str(availablemodes))
+            self.call_service("climate/set_fan_mode", entity_id = self.targetempsensor, fan_mode = new + "/Auto")
 
    def climatedevicechange(self, entity, attribute, old, new, kwargs):
       self.log("New: " + str(new))
       self.log("Old: " + str(old))
       if old == "off" and new != "off" and self.IsConditionMet():
          self.log("The climate device state has changed, updating zones accordingly.")
+         fanmode = self.get_state(self.targetempsensor, attribute="fan_mode")
+         self.climatefanchange(self, new = fanmode , old = "1", attribute = "ignore", kwargs = "n")
          time.sleep(self.randomdelay)  
          self.switchon()
       elif new == "off":
          self.log("Climate State = " + new)
          time.sleep(self.randomdelay)  
          self.switchoff()
+      
       
    def conditionchange(self, entity, attribute, old, new, kwargs):
       self.log("The conditional entity state has changed, updating zone accordingly.")
